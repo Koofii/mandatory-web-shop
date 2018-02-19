@@ -32,12 +32,6 @@ let products = [{
     }
 ]
 
-let prod = {
-    pname: "Gopfather",
-    price: 20,
-    desc: "THE GOPFATHER design by uprising Slav brand WESLAV by Boris",
-    url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192"
-};
 
 
 let productDiv = document.getElementById("products");
@@ -48,31 +42,34 @@ products.forEach(function(element){
     );
 });
 
-
+// funktion för att skapa div
 function createDiv(cls, text){
     let div = document.createElement("div");
     div.setAttribute("class", cls);
     div.innerText = text;
     return div;
 }
+
+// funktion för skapa bild
 function createImage (urlImage){
     let img = document.createElement("img");
     img.setAttribute("src", urlImage);
     return img;
 }
 
+// funktion för att skapa produkt
 function createProduct(product){
     let div = createDiv("produkt", null);
     div.appendChild(createDiv("title", product.pname));
     div.appendChild(createDiv("Price", product.price + " slav coins"));
     div.appendChild(createDiv("Desc", product.desc));
     div.appendChild(createImage(product.url));
-    
-    
 
     return div;
 }
 
+
+// För att switcha mellan "sidorna"
 document.getElementById("checkout").style.display = "none";
 
 document.getElementById("pPage").addEventListener("click", event =>{
@@ -86,39 +83,45 @@ document.getElementById("checkoutPage").addEventListener("click", event =>{
 });
 
 
+
+
+// submit even där vi validatear
 document.getElementById("checkoutForm").addEventListener("submit", function(e){
     e.preventDefault();
     if (validate()){
         //Submit form
+        console.log(e);
     }
 })
-function validate(){
-    if (document.myForm.FirstName.value == ""){
-        document.myForm.FirstName.style.border = "2px solid red";
+
+// validera fält
+function validateField(node){
+    if (node.value == ""){
+        node.style.border = "2px solid red";
         return false;
-    }
-    if (document.myForm.LastName.value == ""){
-        document.myForm.LastName.style.border = "2px solid red";
-        return false;
-    }
-    if (document.myForm.Email.value == ""){
-        document.myForm.Email.style.border = "2px solid red";
-        return false;
-    }
-    if (document.myForm.StreetAdress.value == ""){
-        document.myForm.StreetAdress.style.border = "2px solid red";
-        return false;
-    }
-    if (document.myForm.ZipCode.value == ""){
-        document.myForm.ZipCode.style.border = "2px solid red";
-        return false;
-    }
-    if (document.myForm.City.value == ""){
-        document.myForm.City.style.border = "2px solid red";
-        return false;
-    }
-    else{
-        document.myForm.FirstName.style.border = "1px solid black"
+    } else {
+        node.style.border = "2px solid black";
         return true;
     }
 }
+
+function validateNumber(validera){
+    let x = document.forms["myForm"][validera].value;
+    if (isNaN(x)){
+        document.getElementById("outputForm").innerHTML = validera + " is not a number"
+
+    }
+}
+
+// validation of form
+function validate(){
+    validateField(document.myForm.FirstName);
+    validateField(document.myForm.LastName);
+    validateField(document.myForm.Email);
+    validateField(document.myForm.StreetAdress);
+    validateField(document.myForm.ZipCode);
+    validateNumber("ZipCode");
+    validateNumber("Phone" );
+    validateField(document.myForm.City);
+}
+
