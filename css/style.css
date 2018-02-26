@@ -21,13 +21,35 @@ img{
     width: 400px;
     height: auto;
 }
+#btnProduct{
+    cursor: pointer;
+}
+.listaProdukter{
+    padding: 10px;
+}
+#cart{
+    margin: 10px;
+    text-align: center;
+}
+#cartHtml div{
+    margin: 10px 10px 15px 10px;
+    font-size: 25px;
+    text-align: center;
 
-
+}
 #outputForm{
     font-size: 20px;
     color: red;
 }
-
+#cartTotal{
+    border-radius: 100px;
+    margin: 8px;
+    padding: 3px;
+    float: right;
+    position: absolute;
+    background-color: red;
+    color: white;
+}
 .produkt{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr ;
