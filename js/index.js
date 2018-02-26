@@ -83,23 +83,13 @@ function createProduct(product){
     return div;
 };
 
-function addToCart(){
-    if(this.id in cartList){
-        cartList[this.id] += 1;
-    } else {
-    cartList[this.id] = 1;
-    }
-    console.log(cartList);
-    update();
-};
-
 function findProduct (cart, products){
     let items = Object.keys(cart).map(key =>
     products.find(product => product.id === key));
 
     return itemsHtml = items.map(items =>{
         return `
-        <div data-value="${items.id}" ><span> ${items.pname} ${cart[items.id]} </span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
+        <div data-value="${items.id}" ><span> ${items.pname} Amount:  ${cart[items.id]} </span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
         `
     }).join(" ");
 }
@@ -133,7 +123,7 @@ function validate(){
     validateNumber("Phone" );
     validateField(document.myForm.City);
 };
-
+// Update number cart
 function updateNumber(){
     let nr = countKeys(cartList);
     function countKeys(obj){
@@ -144,7 +134,17 @@ function updateNumber(){
     }
     let cartTotal = document.getElementById("cartTotal").innerHTML = nr;
 }
-
+// Addera till cart
+function addToCart(){
+    if(this.id in cartList){
+        cartList[this.id] += 1;
+    } else {
+    cartList[this.id] = 1;
+    }
+    console.log(cartList);
+    update();
+};
+// Update function
 function update(){
     //Nina-funktion
     let list = findProduct(cartList, products);
@@ -176,15 +176,19 @@ function update(){
 
 // För att switcha mellan "sidorna"
 document.getElementById("checkout").style.display = "none";
+document.getElementById("cartHtml").style.display = "none";
+
 
 document.getElementById("pPage").addEventListener("click", event =>{
     document.getElementById("checkout").style.display = "none";
     document.getElementById("products").style.display = "block";
+    document.getElementById("cartHtml").style.display = "none";
 });
 
 document.getElementById("checkoutPage").addEventListener("click", event =>{
     document.getElementById("products").style.display = "none";
     document.getElementById("checkout").style.display = "flex";
+    document.getElementById("cartHtml").style.display = "block";
 });
 
 // submit even där vi validatear
