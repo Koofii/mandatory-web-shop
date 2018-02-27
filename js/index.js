@@ -45,7 +45,8 @@ products.forEach(function(element){
     productDiv.appendChild(
         createProduct(element)
     );
-})
+});
+
 // funktion för att skapa div
 function createDiv(cls, text){
     let div = document.createElement("div");
@@ -67,7 +68,6 @@ function createButton (id){
     btn.setAttribute("id", id);
     btn.innerText = "Add to cart";
     btn.addEventListener("click", addToCart);
-    
     return btn;
 };
 
@@ -96,7 +96,7 @@ function findProduct (cart, products){
 
 // validera fält
 function validateField(node){
-    if (node.value == ""){
+    if (node.value === ""){
         node.style.border = "2px solid red";
         return false;
     } else {
@@ -152,7 +152,6 @@ function update(){
     updateNumber();
     Array.from(document.getElementsByClassName("add"))
     .forEach(item => item.addEventListener("click", function(){
-        console.log(this.parentElement);
         let id = this.parentElement.getAttribute("data-value");
         
         cartList[id] += 1;
@@ -161,7 +160,6 @@ function update(){
     }));
     Array.from(document.getElementsByClassName("remove"))
     .forEach(item => item.addEventListener("click", function(){
-        console.log(this.parentElement);
         let id = this.parentElement.getAttribute("data-value");
         
         if(cartList[id] > 1){
@@ -169,29 +167,15 @@ function update(){
         } else{
             delete cartList[id]
         }
-
         update()
     }));
 }
 
-$("#logo").hide()
-$("#link-logo").click(function(){
-    $("#logo").show(500);
-})
-$("#hide-logo").click(function(){
-    $("#logo").hide(500);
-})
-
-// $("#checkoutPage").click(function(){
-//     $("#products").hide(500);
-//     $("#checkout").show(500);
-// });
-// $("#pPage").click(function(){
-//     $("#checkout").hide(500);
-//     $("#products").show(500);
-// });
 
 
+
+
+//redan jquery
 
 // För att switcha mellan "sidorna"
 document.getElementById("checkout").style.display = "none";
@@ -210,13 +194,16 @@ document.getElementById("checkoutPage").addEventListener("click", event =>{
     document.getElementById("cartHtml").style.display = "block";
 });
 
+
+
+
 // submit even där vi validatear
-document.getElementById("checkoutForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    if (validate()){
-        //Submit form
-        console.log(e);
-    }
-});
+// document.getElementById("checkoutForm").addEventListener("submit", function(e){
+//     e.preventDefault();
+//     if (validate()){
+//         //Submit form
+//         console.log(e);
+//     }
+// });
 
 

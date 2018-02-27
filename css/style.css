@@ -36,8 +36,7 @@ img{
     text-align: center;
 }
 #cartHtml{
-    
-    display: flex;
+    display: block;
     width: 50%;
 }
 #cartHtml div{
