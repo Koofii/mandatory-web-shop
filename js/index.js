@@ -174,6 +174,25 @@ function update(){
     }));
 }
 
+$("#logo").hide()
+$("#link-logo").click(function(){
+    $("#logo").show(500);
+})
+$("#hide-logo").click(function(){
+    $("#logo").hide(500);
+})
+
+// $("#checkoutPage").click(function(){
+//     $("#products").hide(500);
+//     $("#checkout").show(500);
+// });
+// $("#pPage").click(function(){
+//     $("#checkout").hide(500);
+//     $("#products").show(500);
+// });
+
+
+
 // För att switcha mellan "sidorna"
 document.getElementById("checkout").style.display = "none";
 document.getElementById("cartHtml").style.display = "none";

@@ -90,7 +90,7 @@ div > button{
 .produkt{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr ;
-    margin: 10px 300px 10px 300px;
+    margin: 10px 340px 10px 340px;
     padding: 15px;
     background-color: #383838;
     color: white;
@@ -135,4 +135,19 @@ input{
     border: 1px solid black;
     width: 400px;
     height: 30px;
+}
+#logo{
+    display: flex;    
+    justify-content: center;
+    padding-top: 40vh;
+    text-align: center;
+    z-index: 1;
+    background-color: #383838;
+    float: left;
+    opacity: 0.9;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    color: white;
+    font-size: 100px;
 }
