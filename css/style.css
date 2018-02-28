@@ -150,3 +150,36 @@ input{
     color: white;
     font-size: 100px;
 }
+#reviewsHeader{
+    text-align: center;
+    font-size: 30px;
+}
+.reviews{
+    width: 50%;
+    border: 1px solid #383838;
+    padding: 10px;
+}
+.user{
+    font-weight: bold;
+    font-size: 20px;
+}
+.content{
+    font-size: 18px;
+}
+#formReview{
+    text-align: center;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+#formReview input{
+    margin: 0 auto;
+    width: 20%;
+}
+#formReview input:last-child{
+    margin-top: 10px;
+}
+textarea{
+    width: 20%;
+    border: 1px solid black;
+}   
