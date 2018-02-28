@@ -87,6 +87,7 @@ div > button{
     color: white;
 }
 .produkt{
+    cursor: pointer;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr ;
     margin: 10px 340px 10px 340px;
@@ -182,4 +183,4 @@ input{
 textarea{
     width: 20%;
     border: 1px solid black;
-}   
+}
