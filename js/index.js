@@ -81,7 +81,7 @@ $("button").on("click", addToCart)
 // funktion för att skapa produkt
 function createProduct(prod){
 
-    productDiv.append($('<div id=' + prod.id + ' class="produkt">').append("<div>" + prod.pname + "</div>")
+    productDiv.append($('<div data-value=' + prod.id + ' class="produkt">').append("<div>" + prod.pname + "</div>")
     .append("<div>" + prod.price + " slavcoins</div>").append("<div>" + prod.desc + "</div>")
     .append('<img src=' + prod.url + '>').append('<button>Add to cart</button>'));
 
@@ -129,12 +129,12 @@ function updateNumber(){
 // Addera till cart
 function addToCart(e){
     e.stopPropagation();
-    if($(this).parent().attr("id") in cartList){
-        cartList[$(this).parent().attr("id")] += 1;
+    if($(this).parent().attr("data-value") in cartList){
+        cartList[$(this).parent().attr("data-value")] += 1;
     } else {
-    cartList[$(this).parent().attr("id")] = 1;
+    cartList[$(this).parent().attr("data-value")] = 1;
     }
-    console.log($(this).parent().attr("id"));
+    console.log($(this).parent().attr("data-value"));
     console.log(e);
     console.log(cartList);
     update();
@@ -149,7 +149,7 @@ function update(){
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
         
-        cartList[id] += 1;
+        cartList[data-value] += 1;
 
         update()
     }));
@@ -181,8 +181,8 @@ $("#products").on("click", ".produkt", showProduct)
 function showProduct(){
     console.log(this);
     let overlay = $("#overlay");
-    let id = $(this).attr("id");
-    let copyProduct = $(this).clone().removeAttr("id");
+    let id = $(this).attr("data-value");
+    let copyProduct = $(this).clone();
     $("#products").hide();
     overlay.append(copyProduct);
     
@@ -201,6 +201,7 @@ function showProduct(){
         reviews[id].push({User: user, Content: comment});
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
     });
+    $("#overlay div button").on("click", addToCart);
 };
 
 function writeReviews(rev){
@@ -214,15 +215,15 @@ function emptyOverlay(){
 
 let reviews = {
     tshirt: [
-        {User: "Koof", Content: "Very nice products, blyat", rating: "3"},
+        {User: "Koof", Content: "Very nice products", rating: "3"},
         {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
     ],
     hat: [
-        {User: "Koof", Content: "Very nice products, blyat", rating: "3"},
+        {User: "Koof", Content: "Very nice products", rating: "3"},
         {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
     ],
     pants: [
-        {User: "Koof", Content: "Very nice products, blyat", rating: "3"},
+        {User: "Koof", Content: "Very nice products", rating: "3"},
         {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
     ],
     "tshirt-two": [
