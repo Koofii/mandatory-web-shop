@@ -199,7 +199,6 @@ function showProduct(){
     $("#products").hide();
     overlay.append(copyProduct)
     
-    
     overlay.append('<div id="reviewsHeader">REVIEWS OF THIS PRODUCT</div>')
     .append('<div class="reviews"><div>')
     .append(starsHtml)
@@ -215,19 +214,11 @@ function showProduct(){
         $(".reviews").append(writeReviews(element));
     });
 
-
     $("#submitReview").click(function(e){
         e.preventDefault();
         let user = $("#inputUser").val();
         let comment = $("#inputContent").val();
         let userRating = $("#test").attr("data-rating-id");      
-
-        // get the product id that is currenty shown (in div t.ex. tshirt)
-        // const productId = 
-
-        // find product in products with tshirt
-
-        // product.reviews.push()
 
         console.log(user, comment);
         reviews[id].push({User: user, Content: comment, rating: userRating});
@@ -235,9 +226,7 @@ function showProduct(){
         console.log(reviews);
     });
     $("#overlay div button").on("click", addToCart);
-
     starFunction(id);
-
 };
 let starFunction = function(id){
     let stars = [
