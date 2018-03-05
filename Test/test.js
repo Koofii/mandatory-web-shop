@@ -3,7 +3,8 @@ let products = [{
         id: "tshirt",
         price: 20,
         desc: "THE GOPFATHER design by uprising Slav brand WESLAV by Boris",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192"
+        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192",
+        reviews: []
     },
 
     {   
@@ -180,9 +181,8 @@ $("#products").on("click", ".produkt", showProduct)
 
 let starsHtml = `
     <div class="infosection">
-        <h2> RATE THIS PRODUCT </h2>
-        <div class="stars">
-          <span data-rating-id="1">&#9733;</span>
+        <div class="stars" id="test">
+          <span data-active="true" data-rating-id="1">&#9733;</span>
           <span data-rating-id="2">&#9733;</span>
           <span data-rating-id="3">&#9733;</span>
           <span data-rating-id="4">&#9733;</span>
@@ -198,22 +198,41 @@ function showProduct(){
     let copyProduct = $(this).clone();
     $("#products").hide();
     overlay.append(copyProduct)
-    .append(starsHtml);
+    
     
     overlay.append('<div id="reviewsHeader">REVIEWS OF THIS PRODUCT</div>')
     .append('<div class="reviews"><div>')
+    .append(starsHtml)
     .append('<form id="formReview"><p>Name:</p> <input id="inputUser"></input><p>Comment: </p><textarea id="inputContent"></textarea><input id ="submitReview" name="submit" type="submit" value="submit"></form>')
     
+    $(".stars").on("click", "span", function(e){
+        let star = $(e.target);
+        let rating = parseInt(star.attr("data-rating-id"));
+        star.parent().attr("data-rating-id", rating);
+        
+    });
     reviews[id].forEach(function(element){
         $(".reviews").append(writeReviews(element));
     });
+
+
     $("#submitReview").click(function(e){
-        e.preventDefault;
+        e.preventDefault();
         let user = $("#inputUser").val();
         let comment = $("#inputContent").val();
+        let userRating = $("#test").attr("data-rating-id");      
+
+        // get the product id that is currenty shown (in div t.ex. tshirt)
+        // const productId = 
+
+        // find product in products with tshirt
+
+        // product.reviews.push()
+
         console.log(user, comment);
-        reviews[id].push({User: user, Content: comment});
+        reviews[id].push({User: user, Content: comment, rating: userRating});
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
+        console.log(reviews);
     });
     $("#overlay div button").on("click", addToCart);
 
@@ -236,13 +255,14 @@ let starFunction = function(id){
         }
     }
     $(".stars").on("click", "span", function(e){
-        console.log(e);
         let star = $(e.target);
         let rating = parseInt(star.attr("data-rating-id"));
         changeStarRating(rating);
-        reviews[id].push({Rating: rating});
+        // reviews[id].push({User: "", Content: "", Rating: rating});
+        console.log(reviews);
+        console.log(rating);
     });
-}
+};
 // function för att skriva reviews
 function writeReviews(rev){
     $(".reviews").append('<div class="user">' + rev.User + '<div>')
@@ -255,24 +275,24 @@ function emptyOverlay(){
 // Sparade reviews
 let reviews = {
     tshirt: [
-        {User: "Koof", Content: "Very nice products", rating: "3"},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
+        {User: "Koof", Content: "Very nice products", rating: 3},
+        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
     ],
     hat: [
-        {User: "Koof", Content: "Very nice products", rating: "3"},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
+        {User: "Koof", Content: "Very nice products", rating: 3},
+        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
     ],
     pants: [
-        {User: "Koof", Content: "Very nice products", rating: "3"},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
+        {User: "Koof", Content: "Very nice products", rating: 3},
+        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
     ],
     "tshirt-two": [
-        {User: "David", Content: "Nice product", rating: "3"},
-        {User: "TrueGop", Content: "Veri nice", rating: "3"}
+        {User: "David", Content: "Nice product", rating: 3},
+        {User: "TrueGop", Content: "Veri nice", rating: 3}
     ],
     hoodie: [
-        {User: "Robert", Content: "Achi am real gopnik, i approve", rating: "3"},
-        {User: "Simon", Content: "I want to become gopnik", rating: "3"}
+        {User: "Robert", Content: "Achi am real gopnik, i approve", rating: 3},
+        {User: "Simon", Content: "I want to become gopnik", rating: 3}
     ]
 };
 

@@ -3,7 +3,8 @@ let products = [{
         id: "tshirt",
         price: 20,
         desc: "THE GOPFATHER design by uprising Slav brand WESLAV by Boris",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192"
+        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192",
+        reviews: []
     },
 
     {   
@@ -36,21 +37,34 @@ let products = [{
         url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_4606_grande.jpg?v=1517611798"
     }
 ];
+let reviews = {
+    tshirt: [
+        {User: "Koof", Content: "Very nice products", rating: 3},
+        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
+    ],
+    hat: [
+        {User: "Koof", Content: "Very nice products", rating: 3},
+        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
+    ],
+    pants: [
+        {User: "Koof", Content: "Very nice products", rating: 3},
+        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
+    ],
+    "tshirt-two": [
+        {User: "David", Content: "Nice product", rating: 3},
+        {User: "TrueGop", Content: "Veri nice", rating: 3}
+    ],
+    hoodie: [
+        {User: "Robert", Content: "Achi am real gopnik, i approve", rating: 3},
+        {User: "Simon", Content: "I want to become gopnik", rating: 3}
+    ]
+};
 
 let productDiv = $("#products");
 let cartList = {};
 
-$("#logo").hide();
 $("#checkout").hide();
 $("#cartHtml").hide();
-
-$("#link-logo").click(function(){
-    $("#logo").show(500);
-});
-
-$("#hide-logo").click(function(){
-    $("#logo").hide(500);
-});
 
 $("#checkoutPage").click(function(){
     $("#products").hide();
@@ -178,14 +192,15 @@ function findProduct (cart, products){
 
 $("#products").on("click", ".produkt", showProduct)
 
-
 let starsHtml = `
-    <div class="rating-stars text-center">
-        <i class="fa fa-star fa-fw"></i>
-        <i class="fa fa-star fa-fw"></i>
-        <i class="fa fa-star fa-fw"></i>
-        <i class="fa fa-star fa-fw"></i>
-        <i class="fa fa-star fa-fw"></i>
+    <div class="infosection">
+        <div class="stars" id="test">
+          <span data-active="true" data-rating-id="1">&#9733;</span>
+          <span data-rating-id="2">&#9733;</span>
+          <span data-rating-id="3">&#9733;</span>
+          <span data-rating-id="4">&#9733;</span>
+          <span data-rating-id="5">&#9733;</span>
+        </div>
     </div>
 `
 // Detta är en funktion för att kopiera layouten av en produkt för att sedan visa den targetatde och dölja de andra
@@ -196,24 +211,59 @@ function showProduct(){
     let copyProduct = $(this).clone();
     $("#products").hide();
     overlay.append(copyProduct)
-    .append(starsHtml);
     
     overlay.append('<div id="reviewsHeader">REVIEWS OF THIS PRODUCT</div>')
     .append('<div class="reviews"><div>')
+    .append(starsHtml)
     .append('<form id="formReview"><p>Name:</p> <input id="inputUser"></input><p>Comment: </p><textarea id="inputContent"></textarea><input id ="submitReview" name="submit" type="submit" value="submit"></form>')
     
+    $(".stars").on("click", "span", function(e){
+        let star = $(e.target);
+        let rating = parseInt(star.attr("data-rating-id"));
+        star.parent().attr("data-rating-id", rating);
+        
+    });
     reviews[id].forEach(function(element){
         $(".reviews").append(writeReviews(element));
     });
+
     $("#submitReview").click(function(e){
-        e.preventDefault;
+        e.preventDefault();
         let user = $("#inputUser").val();
         let comment = $("#inputContent").val();
+        let userRating = $("#test").attr("data-rating-id");      
+
         console.log(user, comment);
-        reviews[id].push({User: user, Content: comment});
+        reviews[id].push({User: user, Content: comment, rating: userRating});
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
+        console.log(reviews);
     });
     $("#overlay div button").on("click", addToCart);
+    starFunction(id);
+};
+let starFunction = function(id){
+    let stars = [
+        $("[data-rating-id='1']"),
+        $("[data-rating-id='2']"),
+        $("[data-rating-id='3']"),
+        $("[data-rating-id='4']"),
+        $("[data-rating-id='5']")
+    ];
+
+    function changeStarRating(rating){
+        $(".filled").removeClass("filled");
+        for(let i=1; i<=rating; i++){
+            stars[i-1].addClass("filled");
+        }
+    }
+    $(".stars").on("click", "span", function(e){
+        let star = $(e.target);
+        let rating = parseInt(star.attr("data-rating-id"));
+        changeStarRating(rating);
+        // reviews[id].push({User: "", Content: "", Rating: rating});
+        console.log(reviews);
+        console.log(rating);
+    });
 };
 // function för att skriva reviews
 function writeReviews(rev){
@@ -225,30 +275,3 @@ function emptyOverlay(){
     $("#overlay").empty();
 };
 // Sparade reviews
-let reviews = {
-    tshirt: [
-        {User: "Koof", Content: "Very nice products", rating: "3"},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
-    ],
-    hat: [
-        {User: "Koof", Content: "Very nice products", rating: "3"},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
-    ],
-    pants: [
-        {User: "Koof", Content: "Very nice products", rating: "3"},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
-    ],
-    "tshirt-two": [
-        {User: "David", Content: "Nice product", rating: "3"},
-        {User: "TrueGop", Content: "Veri nice", rating: "3"}
-    ],
-    hoodie: [
-        {User: "Robert", Content: "Achi am real gopnik, i approve", rating: "3"},
-        {User: "Simon", Content: "I want to become gopnik", rating: "3"}
-    ]
-};
-
-
-$("#stars").on("hover", function(){
-    $(this).addClass("hover")
-})

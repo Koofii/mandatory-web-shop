@@ -1,5 +1,5 @@
 *{
-    font-family: 'Righteous', cursive;
+    font-family: 'Oswald', sans-serif;
     margin: 0 auto;
     padding: 0;
 }
@@ -183,4 +183,25 @@ input{
 textarea{
     width: 20%;
     border: 1px solid black;
+}
+
+
+.infosection {
+    flex-grow: 1;
+    padding: 15px;
+    text-align: center;
+}
+.stars{
+    width: 100%;
+    text-align: center;
+}
+.stars span {
+    color: #b4b4b4;
+    user-select: none;
+    cursor: pointer;
+    font-size: 40px;
+    text-align: center;
+}
+.stars .filled {
+    color: black;
 }
