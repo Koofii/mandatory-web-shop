@@ -139,7 +139,7 @@ function addToCart(e){
     console.log(cartList);
     update();
 };
-
+// update function
 function update(){
     //Nina-funktion
     let list = findProduct(cartList, products);
@@ -149,7 +149,7 @@ function update(){
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
         
-        cartList[data-value] += 1;
+        cartList[id] += 1;
 
         update()
     }));
@@ -178,13 +178,25 @@ function findProduct (cart, products){
 
 $("#products").on("click", ".produkt", showProduct)
 
+
+let starsHtml = `
+    <div class="rating-stars text-center">
+        <i class="fa fa-star fa-fw"></i>
+        <i class="fa fa-star fa-fw"></i>
+        <i class="fa fa-star fa-fw"></i>
+        <i class="fa fa-star fa-fw"></i>
+        <i class="fa fa-star fa-fw"></i>
+    </div>
+`
+// Detta är en funktion för att kopiera layouten av en produkt för att sedan visa den targetatde och dölja de andra
 function showProduct(){
     console.log(this);
     let overlay = $("#overlay");
     let id = $(this).attr("data-value");
     let copyProduct = $(this).clone();
     $("#products").hide();
-    overlay.append(copyProduct);
+    overlay.append(copyProduct)
+    .append(starsHtml);
     
     overlay.append('<div id="reviewsHeader">REVIEWS OF THIS PRODUCT</div>')
     .append('<div class="reviews"><div>')
@@ -203,7 +215,7 @@ function showProduct(){
     });
     $("#overlay div button").on("click", addToCart);
 };
-
+// function för att skriva reviews
 function writeReviews(rev){
     $(".reviews").append('<div class="user">' + rev.User + '<div>')
     .append('<div class="content">' + rev.Content + '<div>')
@@ -212,7 +224,7 @@ function writeReviews(rev){
 function emptyOverlay(){
     $("#overlay").empty();
 };
-
+// Sparade reviews
 let reviews = {
     tshirt: [
         {User: "Koof", Content: "Very nice products", rating: "3"},
@@ -235,3 +247,8 @@ let reviews = {
         {User: "Simon", Content: "I want to become gopnik", rating: "3"}
     ]
 };
+
+
+$("#stars").on("hover", function(){
+    $(this).addClass("hover")
+})

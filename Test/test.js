@@ -139,7 +139,7 @@ function addToCart(e){
     console.log(cartList);
     update();
 };
-
+// update function
 function update(){
     //Nina-funktion
     let list = findProduct(cartList, products);
@@ -149,7 +149,7 @@ function update(){
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
         
-        cartList[data-value] += 1;
+        cartList[id] += 1;
 
         update()
     }));
@@ -178,13 +178,27 @@ function findProduct (cart, products){
 
 $("#products").on("click", ".produkt", showProduct)
 
+let starsHtml = `
+    <div class="infosection">
+        <h2> RATE THIS PRODUCT </h2>
+        <div class="stars">
+          <span data-rating-id="1">&#9733;</span>
+          <span data-rating-id="2">&#9733;</span>
+          <span data-rating-id="3">&#9733;</span>
+          <span data-rating-id="4">&#9733;</span>
+          <span data-rating-id="5">&#9733;</span>
+        </div>
+    </div>
+`
+// Detta är en funktion för att kopiera layouten av en produkt för att sedan visa den targetatde och dölja de andra
 function showProduct(){
     console.log(this);
     let overlay = $("#overlay");
     let id = $(this).attr("data-value");
     let copyProduct = $(this).clone();
     $("#products").hide();
-    overlay.append(copyProduct);
+    overlay.append(copyProduct)
+    .append(starsHtml);
     
     overlay.append('<div id="reviewsHeader">REVIEWS OF THIS PRODUCT</div>')
     .append('<div class="reviews"><div>')
@@ -202,8 +216,34 @@ function showProduct(){
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
     });
     $("#overlay div button").on("click", addToCart);
-};
 
+    starFunction(id);
+
+};
+let starFunction = function(id){
+    let stars = [
+        $("[data-rating-id='1']"),
+        $("[data-rating-id='2']"),
+        $("[data-rating-id='3']"),
+        $("[data-rating-id='4']"),
+        $("[data-rating-id='5']")
+    ];
+
+    function changeStarRating(rating){
+        $(".filled").removeClass("filled");
+        for(let i=1; i<=rating; i++){
+            stars[i-1].addClass("filled");
+        }
+    }
+    $(".stars").on("click", "span", function(e){
+        console.log(e);
+        let star = $(e.target);
+        let rating = parseInt(star.attr("data-rating-id"));
+        changeStarRating(rating);
+        reviews[id].push({Rating: rating});
+    });
+}
+// function för att skriva reviews
 function writeReviews(rev){
     $(".reviews").append('<div class="user">' + rev.User + '<div>')
     .append('<div class="content">' + rev.Content + '<div>')
@@ -212,18 +252,18 @@ function writeReviews(rev){
 function emptyOverlay(){
     $("#overlay").empty();
 };
-
+// Sparade reviews
 let reviews = {
     tshirt: [
         {User: "Koof", Content: "Very nice products", rating: "3"},
         {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
     ],
     hat: [
-        {User: "Koof", Content: "Very nice products, blyat", rating: "3"},
+        {User: "Koof", Content: "Very nice products", rating: "3"},
         {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
     ],
     pants: [
-        {User: "Koof", Content: "Very nice products, blyat", rating: "3"},
+        {User: "Koof", Content: "Very nice products", rating: "3"},
         {User: "Dmitri", Content: "AChi like this god hut", rating: "3"}
     ],
     "tshirt-two": [
@@ -235,3 +275,4 @@ let reviews = {
         {User: "Simon", Content: "I want to become gopnik", rating: "3"}
     ]
 };
+
