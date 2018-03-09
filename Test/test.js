@@ -1,57 +1,30 @@
-let products = [{
-        pname: "Gopfather",
-        id: "tshirt",
-        price: 20,
-        desc: "THE GOPFATHER design by uprising Slav brand WESLAV by Boris",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192",
-        reviews: []
-    },
-
-    {   
-        pname: "HANDMADE USHANKA",
-        id: "hat",
-        price: 29,
-        desc: "THIRD EDITION WESLAV USHANKA! LIMITED!",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_1119_grande.jpg?v=1500552123"
-    },
-
-    {
-        pname: "WESLAV Squatpants",
-        id: "pants",
-        price: 30,
-        desc: "Top quality for your Slav needs.",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_3878_2_grande.jpg?v=1507814547"
-    },
-    {
-        pname:"И is for ИДИ НАХУЙ",
-        id: "tshirt-two",
-        price: 20,
-        desc: "Blyatiful!",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_1180_fdbfb2ad-ef95-4746-9687-c1d909bf0e41_grande.jpg?v=1508833808"
-    },
-    {
-        pname: "Squatnik Suit Hoodie",
-        id: "hoodie",
-        price: 55,
-        desc: "FIRST EVER FULLY CUSTOMIZED WESLAV SQUATNIK SUIT",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_4606_grande.jpg?v=1517611798"
-    }
-];
 
 let productDiv = $("#products");
 let cartList = {};
+fetch("http://demo.edument.se/api/products")
+let products;
+let reviews;
+// För att hämta reviews
+fetch("http://demo.edument.se/api/reviews")
+    .then(response => response.json())
+    .then(data => reviews = data)
+    .then(() => console.log(reviews));
 
-$("#logo").hide();
+// För att hämta products
+fetch("http://demo.edument.se/api/products")
+    .then(response => response.json())
+    .then(data => products = data)
+    .then(() => console.log(products))
+    .then(() => console.log(products[1].Reviews[1]))
+    .then(function(){
+        products.forEach(function(element){
+            productDiv.append(createProduct(element)); 
+        });
+        $("button").on("click", addToCart)
+    });
+    
 $("#checkout").hide();
 $("#cartHtml").hide();
-
-$("#link-logo").click(function(){
-    $("#logo").show(500);
-});
-
-$("#hide-logo").click(function(){
-    $("#logo").hide(500);
-});
 
 $("#checkoutPage").click(function(){
     $("#products").hide();
@@ -74,17 +47,15 @@ $( "#checkoutForm" ).submit(function( event ) {
     }
 });
 
-products.forEach(function(element){
-    productDiv.append(createProduct(element)); 
-});
-//event listener för varje knapp
-$("button").on("click", addToCart)
+
+
+
 // funktion för att skapa produkt
 function createProduct(prod){
 
-    productDiv.append($('<div data-value=' + prod.id + ' class="produkt">').append("<div>" + prod.pname + "</div>")
-    .append("<div>" + prod.price + " slavcoins</div>").append("<div>" + prod.desc + "</div>")
-    .append('<img src=' + prod.url + '>').append('<button>Add to cart</button>'));
+    productDiv.append($('<div data-value=' + prod.Id + ' class="produkt">').append("<div>" + prod.Name + "</div>")
+    .append("<div>" + prod.Price + " slavcoins</div>").append("<div>" + prod.Description + "</div>")
+    .append('<img src=' + prod.Image + '>').append('<button>Add to cart</button>'));
 
 };
 // validera fält
@@ -136,7 +107,6 @@ function addToCart(e){
     cartList[$(this).parent().attr("data-value")] = 1;
     }
     console.log($(this).parent().attr("data-value"));
-    console.log(e);
     console.log(cartList);
     update();
 };
@@ -167,12 +137,14 @@ function update(){
     }));
 }
 function findProduct (cart, products){
+    console.log(cart);
     let items = Object.keys(cart).map(key =>
-    products.find(product => product.id === key));
+    products.find(product => product.Id === Number(key)));
+    console.log(items, "item")
 
     return itemsHtml = items.map(items =>{
         return `
-        <div data-value="${items.id}" ><span> ${items.pname} Amount:  ${cart[items.id]} </span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
+        <div data-value="${items.Id}" ><span> ${items.Name} Amount:  ${cart[items.Id]} </span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
         `
     }).join(" ");
 };
@@ -210,7 +182,9 @@ function showProduct(){
         star.parent().attr("data-rating-id", rating);
         
     });
-    reviews[id].forEach(function(element){
+    let reviewList = reviews.filter(reviews => reviews.ProductID ===  Number(id));
+    console.log(reviewList, "reviews");
+    reviewList.forEach(function(element){
         $(".reviews").append(writeReviews(element));
     });
 
@@ -220,10 +194,17 @@ function showProduct(){
         let comment = $("#inputContent").val();
         let userRating = $("#test").attr("data-rating-id");      
 
-        console.log(user, comment);
-        reviews[id].push({User: user, Content: comment, rating: userRating});
+        
+        fetch("http://demo.edument.se/api/reviews", {
+            method: 'POST',
+            body: JSON.stringify({Id: 1, ProductID: id, Name: user, Comment: comment, Rating: userRating}),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        });
+
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
-        console.log(reviews);
+        console.log(products[id].Reviews);
     });
     $("#overlay div button").on("click", addToCart);
     starFunction(id);
@@ -254,34 +235,11 @@ let starFunction = function(id){
 };
 // function för att skriva reviews
 function writeReviews(rev){
-    $(".reviews").append('<div class="user">' + rev.User + '<div>')
-    .append('<div class="content">' + rev.Content + '<div>')
+    $(".reviews").append('<div class="user">' + rev.Name + '<div>')
+    .append('<div class="content">' + rev.Comment + '<div>')
 };
 
 function emptyOverlay(){
     $("#overlay").empty();
 };
 // Sparade reviews
-let reviews = {
-    tshirt: [
-        {User: "Koof", Content: "Very nice products", rating: 3},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
-    ],
-    hat: [
-        {User: "Koof", Content: "Very nice products", rating: 3},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
-    ],
-    pants: [
-        {User: "Koof", Content: "Very nice products", rating: 3},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
-    ],
-    "tshirt-two": [
-        {User: "David", Content: "Nice product", rating: 3},
-        {User: "TrueGop", Content: "Veri nice", rating: 3}
-    ],
-    hoodie: [
-        {User: "Robert", Content: "Achi am real gopnik, i approve", rating: 3},
-        {User: "Simon", Content: "I want to become gopnik", rating: 3}
-    ]
-};
-

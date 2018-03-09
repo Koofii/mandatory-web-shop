@@ -182,6 +182,7 @@ function update(){
 function findProduct (cart, products){
     let items = Object.keys(cart).map(key =>
     products.find(product => product.id === key));
+    console.log(items, "ITEMS");
 
     return itemsHtml = items.map(items =>{
         return `
