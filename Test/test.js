@@ -8,14 +8,12 @@ let reviews;
 fetch("http://demo.edument.se/api/reviews")
     .then(response => response.json())
     .then(data => reviews = data)
-    .then(() => console.log(reviews));
 
 // För att hämta products
 fetch("http://demo.edument.se/api/products")
     .then(response => response.json())
     .then(data => products = data)
     .then(() => console.log(products))
-    .then(() => console.log(products[1].Reviews[1]))
     .then(function(){
         products.forEach(function(element){
             productDiv.append(createProduct(element)); 
@@ -39,16 +37,62 @@ $("#pPage").click(function(){
     $("#cartHtml").hide();
     emptyOverlay();
 });
-$( "#checkoutForm" ).submit(function( event ) {
+$( "#checkoutForm" ).submit(function(event) {
     event.preventDefault();
-    if (validate()){
-        //Submit form
-        console.log(event);
+    let firstName = $('[name="FirstName"]').val();
+    let lastName = $('[name="LastName"]').val();
+    let email = $('[name="Email"]').val();
+    let Phone = $('[name="Phone"]').val();
+    let streetAddress = $('[name="StreetAddress"]').val();
+    let zipCode = $('[name="ZipCode"]').val();
+    let city = $('[name="City"]').val();
+    let comment = $('[name="Comment"]').val();
+
+    const required = ["FirstName", "LastName", "Email", "StreetAddress", "ZipCode", "City"];
+    const requiredFields = Array.from($("input")).filter(x => required.indexOf(x.name) >= 0);
+
+    if (!validate()){
+        requiredFields.forEach(x => validateField(x));
+    } else {
+        //submit form!
+    };
+
+    function validate(){
+        return requiredFields.every(x => validateField(x));
+    };
+    let orderL = collectOrder();
+    let order = {
+        "Firstname": firstName,
+        "LastName": lastName,
+        "Email": email,
+        "Phone": Phone,
+        "StreetAddress": streetAddress,
+        "ZipCode": zipCode,
+        "City": city,
+        "Comment": comment,
+        "OrderItems": orderL
     }
+    
+    fetch("http://demo.edument.se/api/orders", {
+            method: 'POST',
+            body: JSON.stringify(order),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+    });
+
 });
-
-
-
+function collectOrder(){
+    let orderList = []
+    $("#cartHtml div").each(function(index){
+        let productId = Number($(this).attr("data-value"));
+        let numberProduct = cartList[productId];
+        let nameProduct = $(this).children("span:nth-child(1)").text()
+        let price = Number(products[productId-1].Price);
+        orderList.push({"Id": productId,"Name": nameProduct,"Quantity": numberProduct,"Price": price});
+    });
+    return orderList;
+};
 
 // funktion för att skapa produkt
 function createProduct(prod){
@@ -64,7 +108,7 @@ function validateField(node){
         node.style.border = "2px solid red";
         return false;
     } else {
-        node.style.border = "2px solid black";
+        node.style.border = "1px solid black";
         return true;
     }
 };
@@ -75,17 +119,8 @@ function validateNumber(validera){
     }
 }; 
 // validation of form
-function validate(){
-    validateField(document.myForm.FirstName);
-    validateField(document.myForm.LastName);
-    validateField(document.myForm.Email);
-    validateField(document.myForm.StreetAdress);
-    validateField(document.myForm.ZipCode);
-    validateNumber("ZipCode");
-    validateNumber("Phone" );
-    validateField(document.myForm.City);
-};
-// Update number cart
+
+
 // Update number cart
 function updateNumber(){
     let nr = countKeys(cartList);
@@ -106,8 +141,6 @@ function addToCart(e){
     } else {
     cartList[$(this).parent().attr("data-value")] = 1;
     }
-    console.log($(this).parent().attr("data-value"));
-    console.log(cartList);
     update();
 };
 // update function
@@ -119,7 +152,6 @@ function update(){
     Array.from($(".add"))
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
-        
         cartList[id] += 1;
 
         update()
@@ -127,7 +159,6 @@ function update(){
     Array.from($(".remove"))
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
-        
         if(cartList[id] > 1){
             cartList[id] -= 1;
         } else{
@@ -137,14 +168,11 @@ function update(){
     }));
 }
 function findProduct (cart, products){
-    console.log(cart);
     let items = Object.keys(cart).map(key =>
     products.find(product => product.Id === Number(key)));
-    console.log(items, "item")
-
     return itemsHtml = items.map(items =>{
         return `
-        <div data-value="${items.Id}" ><span> ${items.Name} Amount:  ${cart[items.Id]} </span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
+        <div data-value="${items.Id}"><span> ${items.Name}</span><span> Amount:</span> </span><span id="product${items.Id}">${cart[items.Id]}</span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
         `
     }).join(" ");
 };
@@ -164,7 +192,6 @@ let starsHtml = `
 `
 // Detta är en funktion för att kopiera layouten av en produkt för att sedan visa den targetatde och dölja de andra
 function showProduct(){
-    console.log(this);
     let overlay = $("#overlay");
     let id = $(this).attr("data-value");
     let copyProduct = $(this).clone();
@@ -183,7 +210,6 @@ function showProduct(){
         
     });
     let reviewList = reviews.filter(reviews => reviews.ProductID ===  Number(id));
-    console.log(reviewList, "reviews");
     reviewList.forEach(function(element){
         $(".reviews").append(writeReviews(element));
     });
@@ -197,14 +223,13 @@ function showProduct(){
         
         fetch("http://demo.edument.se/api/reviews", {
             method: 'POST',
-            body: JSON.stringify({Id: 1, ProductID: id, Name: user, Comment: comment, Rating: userRating}),
+            body: JSON.stringify({ProductID: id, Name: user, Comment: comment, Rating: userRating}),
             headers: new Headers({
                 'Content-Type': 'application/json'
             })
         });
 
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
-        console.log(products[id].Reviews);
     });
     $("#overlay div button").on("click", addToCart);
     starFunction(id);
@@ -228,9 +253,6 @@ let starFunction = function(id){
         let star = $(e.target);
         let rating = parseInt(star.attr("data-rating-id"));
         changeStarRating(rating);
-        // reviews[id].push({User: "", Content: "", Rating: rating});
-        console.log(reviews);
-        console.log(rating);
     });
 };
 // function för att skriva reviews
