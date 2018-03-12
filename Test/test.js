@@ -13,7 +13,6 @@ fetch("http://demo.edument.se/api/reviews")
 fetch("http://demo.edument.se/api/products")
     .then(response => response.json())
     .then(data => products = data)
-    .then(() => console.log(products))
     .then(function(){
         products.forEach(function(element){
             productDiv.append(createProduct(element)); 
@@ -93,7 +92,6 @@ function collectOrder(){
     });
     return orderList;
 };
-
 // funktion för att skapa produkt
 function createProduct(prod){
 
@@ -112,15 +110,6 @@ function validateField(node){
         return true;
     }
 };
-function validateNumber(validera){
-    let x = document.forms["myForm"][validera].value;
-    if (isNaN(x)){
-        $("#outputForm").html(validera + " is not a number")
-    }
-}; 
-// validation of form
-
-
 // Update number cart
 function updateNumber(){
     let nr = countKeys(cartList);
@@ -176,7 +165,6 @@ function findProduct (cart, products){
         `
     }).join(" ");
 };
-
 $("#products").on("click", ".produkt", showProduct)
 
 let starsHtml = `
@@ -260,7 +248,6 @@ function writeReviews(rev){
     $(".reviews").append('<div class="user">' + rev.Name + '<div>')
     .append('<div class="content">' + rev.Comment + '<div>')
 };
-
 function emptyOverlay(){
     $("#overlay").empty();
 };

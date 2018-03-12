@@ -1,68 +1,24 @@
-let products = [{
-        pname: "Gopfather",
-        id: "tshirt",
-        price: 20,
-        desc: "THE GOPFATHER design by uprising Slav brand WESLAV by Boris",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/gopfather_grande.jpg?v=1512061192",
-        reviews: []
-    },
-
-    {   
-        pname: "HANDMADE USHANKA",
-        id: "hat",
-        price: 29,
-        desc: "THIRD EDITION WESLAV USHANKA! LIMITED!",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_1119_grande.jpg?v=1500552123"
-    },
-
-    {
-        pname: "WESLAV Squatpants",
-        id: "pants",
-        price: 30,
-        desc: "Top quality for your Slav needs.",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_3878_2_grande.jpg?v=1507814547"
-    },
-    {
-        pname:"И is for ИДИ НАХУЙ",
-        id: "tshirt-two",
-        price: 20,
-        desc: "Blyatiful!",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_1180_fdbfb2ad-ef95-4746-9687-c1d909bf0e41_grande.jpg?v=1508833808"
-    },
-    {
-        pname: "Squatnik Suit Hoodie",
-        id: "hoodie",
-        price: 55,
-        desc: "FIRST EVER FULLY CUSTOMIZED WESLAV SQUATNIK SUIT",
-        url: "https://cdn.shopify.com/s/files/1/1438/5606/products/IMG_4606_grande.jpg?v=1517611798"
-    }
-];
-let reviews = {
-    tshirt: [
-        {User: "Koof", Content: "Very nice products", rating: 3},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
-    ],
-    hat: [
-        {User: "Koof", Content: "Very nice products", rating: 3},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
-    ],
-    pants: [
-        {User: "Koof", Content: "Very nice products", rating: 3},
-        {User: "Dmitri", Content: "AChi like this god hut", rating: 3}
-    ],
-    "tshirt-two": [
-        {User: "David", Content: "Nice product", rating: 3},
-        {User: "TrueGop", Content: "Veri nice", rating: 3}
-    ],
-    hoodie: [
-        {User: "Robert", Content: "Achi am real gopnik, i approve", rating: 3},
-        {User: "Simon", Content: "I want to become gopnik", rating: 3}
-    ]
-};
-
 let productDiv = $("#products");
 let cartList = {};
+fetch("http://demo.edument.se/api/products")
+let products;
+let reviews;
+// För att hämta reviews
+fetch("http://demo.edument.se/api/reviews")
+    .then(response => response.json())
+    .then(data => reviews = data)
 
+// För att hämta products
+fetch("http://demo.edument.se/api/products")
+    .then(response => response.json())
+    .then(data => products = data)
+    .then(function(){
+        products.forEach(function(element){
+            productDiv.append(createProduct(element)); 
+        });
+        $("button").on("click", addToCart)
+    });
+    
 $("#checkout").hide();
 $("#cartHtml").hide();
 
@@ -79,25 +35,68 @@ $("#pPage").click(function(){
     $("#cartHtml").hide();
     emptyOverlay();
 });
-$( "#checkoutForm" ).submit(function( event ) {
+$( "#checkoutForm" ).submit(function(event) {
     event.preventDefault();
-    if (validate()){
-        //Submit form
-        console.log(event);
-    }
-});
+    let firstName = $('[name="FirstName"]').val();
+    let lastName = $('[name="LastName"]').val();
+    let email = $('[name="Email"]').val();
+    let Phone = $('[name="Phone"]').val();
+    let streetAddress = $('[name="StreetAddress"]').val();
+    let zipCode = $('[name="ZipCode"]').val();
+    let city = $('[name="City"]').val();
+    let comment = $('[name="Comment"]').val();
 
-products.forEach(function(element){
-    productDiv.append(createProduct(element)); 
+    const required = ["FirstName", "LastName", "Email", "StreetAddress", "ZipCode", "City"];
+    const requiredFields = Array.from($("input")).filter(x => required.indexOf(x.name) >= 0);
+
+    if (!validate()){
+        requiredFields.forEach(x => validateField(x));
+    } else {
+        //submit form!
+    };
+
+    function validate(){
+        return requiredFields.every(x => validateField(x));
+    };
+    let orderL = collectOrder();
+    let order = {
+        "Firstname": firstName,
+        "LastName": lastName,
+        "Email": email,
+        "Phone": Phone,
+        "StreetAddress": streetAddress,
+        "ZipCode": zipCode,
+        "City": city,
+        "Comment": comment,
+        "OrderItems": orderL
+    }
+    
+    fetch("http://demo.edument.se/api/orders", {
+            method: 'POST',
+            body: JSON.stringify(order),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+    });
+
 });
-//event listener för varje knapp
-$("button").on("click", addToCart)
+function collectOrder(){
+    let orderList = []
+    $("#cartHtml div").each(function(index){
+        let productId = Number($(this).attr("data-value"));
+        let numberProduct = cartList[productId];
+        let nameProduct = $(this).children("span:nth-child(1)").text()
+        let price = Number(products[productId-1].Price);
+        orderList.push({"Id": productId,"Name": nameProduct,"Quantity": numberProduct,"Price": price});
+    });
+    return orderList;
+};
 // funktion för att skapa produkt
 function createProduct(prod){
 
-    productDiv.append($('<div data-value=' + prod.id + ' class="produkt">').append("<div>" + prod.pname + "</div>")
-    .append("<div>" + prod.price + " slavcoins</div>").append("<div>" + prod.desc + "</div>")
-    .append('<img src=' + prod.url + '>').append('<button>Add to cart</button>'));
+    productDiv.append($('<div data-value=' + prod.Id + ' class="produkt">').append("<div>" + prod.Name + "</div>")
+    .append("<div>" + prod.Price + " slavcoins</div>").append("<div>" + prod.Description + "</div>")
+    .append('<img src=' + prod.Image + '>').append('<button>Add to cart</button>'));
 
 };
 // validera fält
@@ -106,28 +105,10 @@ function validateField(node){
         node.style.border = "2px solid red";
         return false;
     } else {
-        node.style.border = "2px solid black";
+        node.style.border = "1px solid black";
         return true;
     }
 };
-function validateNumber(validera){
-    let x = document.forms["myForm"][validera].value;
-    if (isNaN(x)){
-        $("#outputForm").html(validera + " is not a number")
-    }
-}; 
-// validation of form
-function validate(){
-    validateField(document.myForm.FirstName);
-    validateField(document.myForm.LastName);
-    validateField(document.myForm.Email);
-    validateField(document.myForm.StreetAdress);
-    validateField(document.myForm.ZipCode);
-    validateNumber("ZipCode");
-    validateNumber("Phone" );
-    validateField(document.myForm.City);
-};
-// Update number cart
 // Update number cart
 function updateNumber(){
     let nr = countKeys(cartList);
@@ -148,9 +129,6 @@ function addToCart(e){
     } else {
     cartList[$(this).parent().attr("data-value")] = 1;
     }
-    console.log($(this).parent().attr("data-value"));
-    console.log(e);
-    console.log(cartList);
     update();
 };
 // update function
@@ -162,7 +140,6 @@ function update(){
     Array.from($(".add"))
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
-        
         cartList[id] += 1;
 
         update()
@@ -170,7 +147,6 @@ function update(){
     Array.from($(".remove"))
     .forEach(item => item.addEventListener("click", function(){
         let id = this.parentElement.getAttribute("data-value");
-        
         if(cartList[id] > 1){
             cartList[id] -= 1;
         } else{
@@ -181,16 +157,13 @@ function update(){
 }
 function findProduct (cart, products){
     let items = Object.keys(cart).map(key =>
-    products.find(product => product.id === key));
-    console.log(items, "ITEMS");
-
+    products.find(product => product.Id === Number(key)));
     return itemsHtml = items.map(items =>{
         return `
-        <div data-value="${items.id}" ><span> ${items.pname} Amount:  ${cart[items.id]} </span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
+        <div data-value="${items.Id}"><span> ${items.Name}</span><span> Amount:</span> </span><span id="product${items.Id}">${cart[items.Id]}</span><a class="add" href="#">+</a><a class="remove" href="#">-</a></div>
         `
     }).join(" ");
 };
-
 $("#products").on("click", ".produkt", showProduct)
 
 let starsHtml = `
@@ -206,7 +179,6 @@ let starsHtml = `
 `
 // Detta är en funktion för att kopiera layouten av en produkt för att sedan visa den targetatde och dölja de andra
 function showProduct(){
-    console.log(this);
     let overlay = $("#overlay");
     let id = $(this).attr("data-value");
     let copyProduct = $(this).clone();
@@ -224,7 +196,8 @@ function showProduct(){
         star.parent().attr("data-rating-id", rating);
         
     });
-    reviews[id].forEach(function(element){
+    let reviewList = reviews.filter(reviews => reviews.ProductID ===  Number(id));
+    reviewList.forEach(function(element){
         $(".reviews").append(writeReviews(element));
     });
 
@@ -234,10 +207,16 @@ function showProduct(){
         let comment = $("#inputContent").val();
         let userRating = $("#test").attr("data-rating-id");      
 
-        console.log(user, comment);
-        reviews[id].push({User: user, Content: comment, rating: userRating});
+        
+        fetch("http://demo.edument.se/api/reviews", {
+            method: 'POST',
+            body: JSON.stringify({ProductID: id, Name: user, Comment: comment, Rating: userRating}),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        });
+
         $(".reviews").append('<div class="user">' + user + '<div>').append('<div class="content">' + comment + '<div>');
-        console.log(reviews);
     });
     $("#overlay div button").on("click", addToCart);
     starFunction(id);
@@ -261,18 +240,13 @@ let starFunction = function(id){
         let star = $(e.target);
         let rating = parseInt(star.attr("data-rating-id"));
         changeStarRating(rating);
-        // reviews[id].push({User: "", Content: "", Rating: rating});
-        console.log(reviews);
-        console.log(rating);
     });
 };
 // function för att skriva reviews
 function writeReviews(rev){
-    $(".reviews").append('<div class="user">' + rev.User + '<div>')
-    .append('<div class="content">' + rev.Content + '<div>')
+    $(".reviews").append('<div class="user">' + rev.Name + '<div>')
+    .append('<div class="content">' + rev.Comment + '<div>')
 };
-
 function emptyOverlay(){
     $("#overlay").empty();
 };
-// Sparade reviews
